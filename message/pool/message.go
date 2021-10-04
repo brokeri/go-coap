@@ -2,6 +2,7 @@ package pool
 
 import (
 	"fmt"
+	"context"
 	"io"
 
 	"github.com/plgd-dev/go-coap/v2/message"
@@ -356,4 +357,14 @@ func (r *Message) ReadBody() ([]byte, error) {
 		return nil, err
 	}
 	return payload[:n], nil
+}
+
+// convert to message.Message, optionally adding a context
+func (r *Message) ToMessage(ctx context.Context) *message.Message {
+	msg := r.msg
+	if ctx != nil {
+		msg.Context = ctx
+	}
+	msg.Body = r.payload
+	return &msg
 }
