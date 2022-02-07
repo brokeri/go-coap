@@ -131,6 +131,20 @@ docker build . --network=host -t go-coap:build --target build
 docker run --mount type=bind,source="$(pwd)",target=/shared,readonly --network=host go-coap:build go test './...'
 ```
 
+## Brokeri Adaptations
+
+This fork contains all its adaptations on the `brokeri` branch.
+The `master`, and all tags, are identical to their equivalents in the `plgd-dev` repo.
+
+To use the adaptations in this module, do the following. 
+In your application source code, include this module as `github.com/plgd-dev/go-coap/v2`.
+Replace theplgd-dev version with the brokeri version on branch `brokeri`:
+
+	go mod edit -replace github.com/plg-dev/go-coap/v2=github.com/brokeri/go-coap/v2@brokeri
+
+To update this fork, just pull from `plgd-dev`, rebase branch `brokeri`, and then push here.
+Update go.mod files of your applications, too!
+
 ## License
 
 Apache 2.0
