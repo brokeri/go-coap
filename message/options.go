@@ -9,7 +9,7 @@ type Options []Option
 
 const maxPathValue = 255
 
-// Get the size of the buffer required to store path in URI-Path options.
+// GetPathBufferSize gets the size of the buffer required to store path in URI-Path options.
 //
 // If the path cannot be stored an error is returned.
 func GetPathBufferSize(path string) (int, error) {
@@ -78,8 +78,8 @@ func (options Options) SetPath(buf []byte, path string) (Options, int, error) {
 	return o, encoded, nil
 }
 
-func (options Options) path(buf []byte) (int, error) {
-	firstIdx, lastIdx, err := options.Find(URIPath)
+func (options Options) path(buf []byte, id OptionID) (int, error) {
+	firstIdx, lastIdx, err := options.Find(id)
 	if err != nil {
 		return -1, err
 	}
@@ -107,10 +107,27 @@ func (options Options) path(buf []byte) (int, error) {
 // Return's number of used buf bytes or error when occurs.
 func (options Options) Path() (string, error) {
 	buf := make([]byte, 32)
-	m, err := options.path(buf)
+	m, err := options.path(buf, URIPath)
 	if err == ErrTooSmall {
 		buf = append(buf, make([]byte, m)...)
-		m, err = options.path(buf)
+		m, err = options.path(buf, URIPath)
+	}
+	if err != nil {
+		return "", err
+	}
+	buf = buf[:m]
+	return string(buf), nil
+}
+
+// LocationPath joins Location-Path options by '/' to the buf.
+//
+// Return's number of used buf bytes or error when occurs.
+func (options Options) LocationPath() (string, error) {
+	buf := make([]byte, 32)
+	m, err := options.path(buf, LocationPath)
+	if err == ErrTooSmall {
+		buf = append(buf, make([]byte, m)...)
+		m, err = options.path(buf, LocationPath)
 	}
 	if err != nil {
 		return "", err
